@@ -1,4 +1,5 @@
 .kiro
 .vscode
 example
-build
+build/
+*.tar.gz

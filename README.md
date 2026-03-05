@@ -1,6 +1,6 @@
 # AdGuard Log Viewer
 
-A lightweight web interface for viewing AdGuardHome DNS query logs. Designed for resource-constrained routers like the GL-iNet GL-MT300 (MIPS CPU, 128MB RAM).
+A lightweight web interface for viewing AdGuardHome DNS query logs. Designed for resource-constrained routers like the GL-iNet GL-MT3000 (ARM64) and GL-MT300 (MIPS).
 
 Single static binary, no dependencies, server-side rendered HTML.
 
@@ -20,6 +20,9 @@ Requires Go 1.25+.
 ```sh
 # Native build
 make build
+
+# Cross-compile for ARM64/OpenWrt (GL-MT3000, etc.)
+make build-arm64
 
 # Cross-compile for MIPS/OpenWrt (GL-MT300, etc.)
 make build-mips
@@ -60,14 +63,16 @@ Then open `http://<router-ip>:8080` in your browser.
 
 ## Deploy to OpenWrt Router
 
+### ARM64 routers (GL-MT3000, etc.)
+
 1. Cross-compile:
    ```sh
-   make build-mips
+   make build-arm64
    ```
 
 2. Copy files to the router:
    ```sh
-   scp adguard-log-viewer-mips root@<router-ip>:/usr/bin/adguard-log-viewer
+   scp build/adguard-log-viewer-arm64 root@<router-ip>:/usr/bin/adguard-log-viewer
    scp template.html root@<router-ip>:/etc/adguard-log-viewer/template.html
    scp config.example.txt root@<router-ip>:/etc/adguard-log-viewer/config.txt
    ```
@@ -88,6 +93,22 @@ Then open `http://<router-ip>:8080` in your browser.
    ```sh
    ssh root@<router-ip> "/etc/init.d/adguard-log-viewer start"
    ```
+
+### MIPS routers (GL-MT300, etc.)
+
+1. Cross-compile:
+   ```sh
+   make build-mips
+   ```
+
+2. Copy files to the router:
+   ```sh
+   scp build/adguard-log-viewer-mips root@<router-ip>:/usr/bin/adguard-log-viewer
+   scp template.html root@<router-ip>:/etc/adguard-log-viewer/template.html
+   scp config.example.txt root@<router-ip>:/etc/adguard-log-viewer/config.txt
+   ```
+
+3. Follow steps 3–5 from the ARM64 section above.
 
 ## URL Query Parameters
 
