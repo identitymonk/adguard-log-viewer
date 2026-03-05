@@ -1,0 +1,10 @@
+# AdGuard Log Viewer Configuration
+#
+# Format: key = value (one per line)
+# Lines starting with '#' are comments.
+
+# Path to the AdGuardHome query log (NDJSON format)
+log_file = /var/log/adguardhome/querylog.json
+
+# HTTP port for the web interface (1-65535)
+http_port = 8080

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AdGuard Log Viewer</title>
+<style>
+body{font-family:sans-serif;margin:1em;font-size:14px}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid #ccc;padding:4px 8px;text-align:left}
+th{background:#f0f0f0}
+tr.blocked{background:#ffcccc}
+tr.blocked td{background:#ffcccc}
+.filters{margin-bottom:1em}
+.filters label{margin-right:8px}
+.filters input,.filters select{margin-right:12px;padding:2px 4px}
+.pagination{margin-top:1em}
+.pagination a{margin:0 8px}
+.error{color:#c00;font-weight:bold;margin:1em 0}
+</style>
+</head>
+<body>
+<h1>AdGuard Log Viewer</h1>
+<form method="GET" class="filters">
+<label>IP: <input type="text" name="ip" value="{{.Filter.IP}}"></label>
+<label>Hostname: <input type="text" name="hostname" value="{{.Filter.Hostname}}"></label>
+<label>Start: <input type="datetime-local" name="start" value="{{with .Filter.TimeStart}}{{.Format "2006-01-02T15:04"}}{{end}}"></label>
+<label>End: <input type="datetime-local" name="end" value="{{with .Filter.TimeEnd}}{{.Format "2006-01-02T15:04"}}{{end}}"></label>
+<label>Status:
+<select name="status">
+<option value="">All</option>
+<option value="blocked"{{if eq .Filter.BlockStatus "blocked"}} selected{{end}}>Blocked</option>
+<option value="allowed"{{if eq .Filter.BlockStatus "allowed"}} selected{{end}}>Allowed</option>
+</select>
+</label>
+<button type="submit">Filter</button>
+</form>
+{{- if .Error}}
+<p class="error">{{.Error}}</p>
+{{- else}}
+{{- if .Page.Entries}}
+<table>
+<tr><th>Timestamp</th><th>Hostname</th><th>Query Type</th><th>Client IP</th><th>Status</th><th>Cached</th></tr>
+{{- range .Page.Entries}}
+<tr{{if .IsFiltered}} class="blocked"{{end}}><td>{{.Timestamp.Format "2006-01-02 15:04:05"}}</td><td>{{.Hostname}}</td><td>{{.QueryType}}</td><td>{{.ClientIP}}</td><td>{{if .IsFiltered}}Blocked{{else}}Allowed{{end}}</td><td>{{if .Cached}}Yes{{else}}No{{end}}</td></tr>
+{{- end}}
+</table>
+<div class="pagination">
+{{- if .Page.HasPrev}}
+<a href="?{{filterQuery .Filter (sub .Page.PageNum 1)}}">Previous</a>
+{{- end}}
+Page {{.Page.PageNum}} of {{.Page.TotalPages}}
+{{- if .Page.HasNext}}
+<a href="?{{filterQuery .Filter (add .Page.PageNum 1)}}">Next</a>
+{{- end}}
+</div>
+{{- else}}
+<p>No log entries found.</p>
+{{- end}}
+{{- end}}
+</body>
+</html>
